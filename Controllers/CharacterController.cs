@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NetCoreApi.Dtos.CharacterDtos;
 using NetCoreApi.Interfaces;
 using NetCoreApi.Models;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace NetCoreApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class CharacterController: ControllerBase 

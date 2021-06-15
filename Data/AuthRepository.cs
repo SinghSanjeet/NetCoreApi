@@ -1,9 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using NetCoreApi.Interfaces;
 using NetCoreApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace NetCoreApi.Data
@@ -11,31 +15,35 @@ namespace NetCoreApi.Data
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext _context;
+        private readonly IConfiguration _configuration;
 
-        public AuthRepository(DataContext context)
+        public AuthRepository(DataContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
 
         }
 
         public async Task<ServiceResponse<string>> Login(string userName, string password)
         {
             var response = new ServiceResponse<string>();
-            if(! await UserExists(userName))
+            var userData = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == userName.ToLower());
+            if (userData == null)
             {
                 response.IsSuccess = false;
                 response.Message = "User does not exists.";
                 return response;
             }
-
-            var userData = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == userName.ToLower());
-
-            if(!VerifyPassword(password, userData.PasswordHash, userData.PasswordSalt))
+            else if(!VerifyPassword(password, userData.PasswordHash, userData.PasswordSalt))
             {
                 response.IsSuccess = false;
                 response.Message = "Incorrect password.";
             }
-            response.Data = userData.Id.ToString();
+            else
+            {
+                response.Data = CreateToken(userData);
+            }
+            
             return response;
         }
 
@@ -95,6 +103,31 @@ namespace NetCoreApi.Data
                 }
                 return true;
             }            
+        }
+
+        private string CreateToken(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.
+                                                GetBytes(_configuration.GetSection("AppSetting:Token").Value));
+
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = cred
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+
         }
     }
 }
