@@ -39,6 +39,35 @@ namespace NetCoreApi.Controllers
             
             return Ok(await _charaterService.AddNewCharacter(newCharacter));
         }
+
+        [HttpPut]
+        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> UpdateCharacter(UpdateCharacterDto update)
+        {
+            var response = await _charaterService.UpdateCharacter(update);
+            if (response.Data == null)
+            {
+                return NotFound(response);
+            }
+            else
+            {
+                return Ok(response);
+            }            
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> DeleteCharter(int id)
+        {
+            var response = await _charaterService.DeleteCharacter(id);
+            if(response == null)
+            {
+                return NotFound(response);
+            }
+            else
+            {
+                return Ok(response);
+            }
+        }
+
         
 
     }

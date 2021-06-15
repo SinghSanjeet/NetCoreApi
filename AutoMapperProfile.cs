@@ -14,6 +14,7 @@ namespace NetCoreApi
         {
             CreateMap<Characters, GetCharacterDto>();
             CreateMap<AddCharacterDto, Characters>();
+            CreateMap<AddCharacterDto, UpdateCharacterDto>();
         }
     }
 }

@@ -38,6 +38,26 @@ namespace NetCoreApi.Services
             return response;
         }
 
+        public async Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter(int id)
+        {
+            var response = new ServiceResponse<List<GetCharacterDto>>();
+            try
+            {
+                Characters character = _characters.FirstOrDefault(x => x.Id == id);
+                _characters.Remove(character);
+                response.Data = _mapper.Map <List<GetCharacterDto>>(_characters).ToList();
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+                response.IsSuccess = false;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllcharacters()
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
@@ -49,6 +69,30 @@ namespace NetCoreApi.Services
         {
             var response = new ServiceResponse<GetCharacterDto>();
             response.Data = _mapper.Map<GetCharacterDto>(_characters.FirstOrDefault(x => x.Id == id));
+            return response;
+        }
+
+        public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(UpdateCharacterDto character)
+        {
+            var response = new ServiceResponse<GetCharacterDto>();
+            try
+            {
+                Characters characterToUpdate = _characters.FirstOrDefault(x => x.Id == character.Id);
+                characterToUpdate.Name = character.Name;
+                characterToUpdate.Strength = character.Strength;
+                characterToUpdate.Intelligence = character.Intelligence;
+                characterToUpdate.HitPoints = character.HitPoints;
+                characterToUpdate.Class = character.Class;
+                response.Data = _mapper.Map<GetCharacterDto>(characterToUpdate);
+            }
+            catch (Exception ex)
+            {
+
+                response.IsSuccess = false;
+                response.Message = ex.Message;
+            }
+           
+
             return response;
         }
     }
