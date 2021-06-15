@@ -34,8 +34,7 @@ namespace NetCoreApi
              );
             services.AddControllers();
             services.AddMvcCore();
-            //services.AddMvc();
-
+            
             // Register the Swagger Generator service. This service is responsible for genrating Swagger Documents.
             // Note: Add this service at the end after AddMvc() or AddMvcCore().
             services.AddSwaggerGen(c =>
@@ -55,6 +54,7 @@ namespace NetCoreApi
             });
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<ICharacterService, Services.CharacterService>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
 
         }
 
