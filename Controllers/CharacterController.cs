@@ -6,6 +6,7 @@ using NetCoreApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace NetCoreApi.Controllers
@@ -26,7 +27,8 @@ namespace NetCoreApi.Controllers
         [HttpGet("GetAll")]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> Get()
         {
-            return Ok(await _charaterService.GetAllcharacters());
+            int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            return Ok(await _charaterService.GetAllcharacters(userId));
         }
 
         [HttpGet("{id}")]

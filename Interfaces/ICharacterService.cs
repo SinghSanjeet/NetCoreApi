@@ -9,7 +9,7 @@ namespace NetCoreApi.Interfaces
 {
     public  interface ICharacterService
     {
-        Task<ServiceResponse<List<GetCharacterDto>>> GetAllcharacters();
+        Task<ServiceResponse<List<GetCharacterDto>>> GetAllcharacters(int userId);
         Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id);
         Task<ServiceResponse<List<GetCharacterDto>>> AddNewCharacter(AddCharacterDto character);
         Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(UpdateCharacterDto character);

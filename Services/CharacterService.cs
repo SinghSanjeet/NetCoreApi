@@ -60,10 +60,10 @@ namespace NetCoreApi.Services
             return response;
         }
 
-        public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllcharacters()
+        public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllcharacters(int userId)
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
-            var dbCharacters = await _context.Characters.ToListAsync();
+            var dbCharacters = await _context.Characters.Where( x => x.User.Id == userId).ToListAsync();
             response.Data = _mapper.Map<List<GetCharacterDto>>(dbCharacters);
             return response;
         }
