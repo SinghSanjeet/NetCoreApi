@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetCoreApi.Data;
 
 namespace NetCoreApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210618061105_relationship")]
+    partial class relationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,30 +77,6 @@ namespace NetCoreApi.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("NetCoreApi.Models.Weapon", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Damage")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId")
-                        .IsUnique();
-
-                    b.ToTable("Weapons");
-                });
-
             modelBuilder.Entity("NetCoreApi.Models.Characters", b =>
                 {
                     b.HasOne("NetCoreApi.Models.User", "User")
@@ -106,22 +84,6 @@ namespace NetCoreApi.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NetCoreApi.Models.Weapon", b =>
-                {
-                    b.HasOne("NetCoreApi.Models.Characters", "Character")
-                        .WithOne("Weapon")
-                        .HasForeignKey("NetCoreApi.Models.Weapon", "CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Character");
-                });
-
-            modelBuilder.Entity("NetCoreApi.Models.Characters", b =>
-                {
-                    b.Navigation("Weapon");
                 });
 
             modelBuilder.Entity("NetCoreApi.Models.User", b =>

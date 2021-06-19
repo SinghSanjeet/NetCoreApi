@@ -27,8 +27,7 @@ namespace NetCoreApi.Controllers
         [HttpGet("GetAll")]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> Get()
         {
-            int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            return Ok(await _charaterService.GetAllcharacters(userId));
+            return Ok(await _charaterService.GetAllcharacters());
         }
 
         [HttpGet("{id}")]
@@ -40,8 +39,13 @@ namespace NetCoreApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> AddNewCharacter(AddCharacterDto newCharacter)
         {
-            
-            return Ok(await _charaterService.AddNewCharacter(newCharacter));
+            var response = await _charaterService.AddNewCharacter(newCharacter);
+
+            if(!response.IsSuccess)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
         }
 
         [HttpPut]
