@@ -13,7 +13,7 @@ namespace NetCoreApi.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("controller")]
+    [Route("[controller]")]
     public class WeaponController : ControllerBase
     {
         private readonly IWeaponService _weaponService;
@@ -23,7 +23,7 @@ namespace NetCoreApi.Controllers
         }
 
 
-        [HttpPost("AddWeapon")]
+        [HttpPost]
         public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> AddWeapon(WeaponDto weapon)
         {
             var response = await _weaponService.AddWeapon(weapon);

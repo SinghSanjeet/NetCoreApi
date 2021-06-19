@@ -18,6 +18,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Http;
+using NetCoreApi.Services;
 
 namespace NetCoreApi
 {
@@ -59,6 +60,7 @@ namespace NetCoreApi
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<ICharacterService, Services.CharacterService>();
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IWeaponService, WeaponService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                .AddJwtBearer(options =>
