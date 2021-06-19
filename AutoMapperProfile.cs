@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NetCoreApi.Dtos.CharacterDtos;
+using NetCoreApi.Dtos.Skill;
 using NetCoreApi.Dtos.WeaponDto;
 using NetCoreApi.Models;
 using System;
@@ -18,6 +19,7 @@ namespace NetCoreApi
             CreateMap<AddCharacterDto, UpdateCharacterDto>();
             CreateMap<Weapon, GetWeaponDto>();
             CreateMap<WeaponDto, Weapon>();
+            CreateMap<Skill, GetSkillDto>();
         }
     }
 }

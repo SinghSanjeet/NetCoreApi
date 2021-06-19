@@ -137,5 +137,43 @@ namespace NetCoreApi.Services
 
             return response;
         }
+
+        public async Task<ServiceResponse<GetCharacterDto>> AddCharacterSkill(AddCharacterSkillDto addCharacterSkillDto)
+        {
+            var response = new ServiceResponse<GetCharacterDto>();
+            try
+            {
+                var character = await _context.Characters
+                    .Include(x => x.Weapon)
+                    .Include(x => x.Skills)
+                    .FirstOrDefaultAsync(x => x.Id == addCharacterSkillDto.CharacterID && x.User.Id == GetUserId());
+                if(character == null)
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Character not found.";
+                    return response;
+                }
+                var skill = await _context.Skills.FirstOrDefaultAsync(x => x.Id == addCharacterSkillDto.SkillId);
+                if(skill == null)
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Skill not found.";
+                    return response;
+                }
+
+                character.Skills.Add(skill);
+                await _context.SaveChangesAsync();
+
+                response.Data = _mapper.Map<GetCharacterDto>(character);
+
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
     }
 }

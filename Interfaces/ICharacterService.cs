@@ -14,5 +14,6 @@ namespace NetCoreApi.Interfaces
         Task<ServiceResponse<List<GetCharacterDto>>> AddNewCharacter(AddCharacterDto characterDto);
         Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(UpdateCharacterDto character);
         Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter(int id);
+        Task<ServiceResponse<GetCharacterDto>> AddCharacterSkill(AddCharacterSkillDto addCharacterSkillDto);
     }
 }
