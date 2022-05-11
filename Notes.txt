@@ -1,4 +1,4 @@
-﻿Requirement for .Net Core
+Requirement for .Net Core
 1.) IDE 2.) .Net core SDK
 
 There is no need to unload the project to edit the cs.proj filein .Net core
@@ -186,7 +186,7 @@ Conventional routing
 
 Attribute routing
 --use app.UseMvc();
---On the action method of the ocntroller class use the Route attributes
+--On the action method of the ocntroller class use the Route attributaes
   [Route("")]
   [Route("Home")]
   [Route("Home/Index")]
@@ -200,3 +200,17 @@ Attribute routing
 --Route attribute can be applied on the Controller or the COntroller Action methods
 --With attribute routing, routes are paced next to the action methods that will actually use them
 --Attribute routing offer a bit more flexibility than the conventional routing
+
+
+AddSingleton:
+With a singleton service, there is only one instance. An instance is created , when the service is
+first created and that single instance is used by the all http requests throughout the application.
+
+AddScoped:
+With the scoped service we get the same instance within a scope of the given http request but a new
+instance across the different http requests.
+
+
+AddTransient:
+With a transient service a new nstance is provided everytime an instance is requested wheather it is
+in the scope of the same http or the different http requests.
