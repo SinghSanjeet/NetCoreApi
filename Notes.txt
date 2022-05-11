@@ -1,0 +1,202 @@
+﻿Requirement for .Net Core
+1.) IDE 2.) .Net core SDK
+
+There is no need to unload the project to edit the cs.proj filein .Net core
+File or folder references are no longer included in the project file
+The file system determines what files and folders belong to the project.
+
+cs.proj file:
+TargetFramwork
+AspNetCoreHostingModel
+ --Inprocess (means host inside iis worker process)
+ --OutOfProcess (default)(forward the request to a backend asp.net core app running the kestrel server)
+PackageReference
+--Microsoft.AspNetCore.App(Meta package)(we do not define implicit version on meta package)
+
+
+Program.cs file:
+ -- Main method is the entry point of the application
+ --Calls createWebHostBuilder method which then within cann the static method of WebHost called CreateDefaultBuilder method
+ -- CreateDefaltBuilder() perform following tasks:
+        --Setting up web server
+        --Loading the host and application configuration from various config sources
+        --Configure logging
+
+InProcess Hosting:
+ --To configure use this: <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+ -- Once we have above setting the CreateDeafualtBuilder() calls th UseIIS() Method and host the app inside the iis worker process
+    (w3wp.exe or iisepress.exe)
+ -- Inprocess hosting delivers significantly higher throughput than ourOfProcess hosting
+ -- to get the process name executing the app: System.Diagonotic.Process.GetCurrentProcess().Processname
+
+
+Kestrel:
+--Cross platform web server for Asp.Net Core
+--Can be used, by itself as an edge server
+--the process used to host app is dotnet.exe
+--Kestrel can be used as internet facing web server
+                    Kestrel
+                 -------------------
+                |   dotnet.exe      |
+internet <----->|   ------------    |
+                |  |Application |   |
+                 -------------------
+--Kestrel can used in cobination of the reverse proxy
+
+                    Kestrel
+                 -------------------
+                |   dotnet.exe      |
+internet        |   ------------    |
+    |           |  |Application |   |
+    |            -------------------
+    |                    |
+    |            -------------------
+    |           |   Reverse Proxy   |
+    |---------->|   ------------    |
+                |  |IIS,Apache,NgInx| 
+                 -------------------
+
+
+appSettings.json
+--Is a cofiguration file
+--can be accessed unsing IConfiguration
+
+Note: Later configuration surces overwrite the privous cofiguration sources values
+
+Middleware:
+--Has access to both request and response.
+--May simply pass the request to the next Middleware
+--May process and then pass the request to the next Middleware
+--May handle the request and then shortcircuit the pipeline
+--May process the outgoing pipeline
+--Middleware are executed in the order of their listing
+--Terminal middleware is a middleware that does not call the next middleware in the pipeline. use run extention
+  method of IApplicationBuilder to invoke a terminal middleware.
+--everything that happens after the next() method is invoked in each of the middleware component, happens as the response
+  travels from the middleware to middleware throught the pipeline and this is represented by the outgoing arrow.
+
+serving the static files:
+--all the files should be within the wwwroot folder.
+--add useStaticFiles() middleware in the application pipeline
+   app.UseStaticFiles();
+--To be able to server the default html page we need to inject the UseDefaultFiles() middleware in the pipeline
+  and the order of this middleware should be before the UseStaticFiles() middleware
+
+  app.UseDefaultFiles();
+  app.UseStaticFiles();
+
+if we need to change the default files served by the UseDefaultFiles() middleware we can do that by modifying
+the defaultoption and passig it in the useDefaultFiles() middleware.
+
+ DefaultFileOptions defaultFile = new DefaultFileOption();
+ defaultFile.DefaultFIleNames.Clear();
+defaultFile.DefaultFIleNames.Add("Foo.htm");
+
+  app.UseDefaultFiles(defaultFile);
+  app.UseStaticFiles();
+
+--instead of using two different middleware app.UseDefaultFiles(), app.UseStaticFiles() we can use one middeware that
+  combines the functionality of both the middleware which is UseFileServer() middleware.
+
+
+--ASPNETCORE_ENVIRONMENT variable is used to set the app environment by default is it set to production.
+--on development machine we set it using the launchsetting.json file
+--on stageing or prduction we set it in the operating system
+--IHostingEnvironment is used to access the runtime environment.
+
+
+MVC
+--Is an architectural design pattern for implementing the user interface layer of the application
+--Model: Set of class that represent data + the ogic to manage the data
+--View: contains the display logic to present the mode data provided by the controller
+--Controller: Handles the http request, work with the model, and selects a view to render that model.
+
+Steps to use MVC in .NET Core
+--add the MVC services to the dependency injection container : services.AddMvc();
+--Add Mvc middleware to the application pipeline: app.UseMvcWithDefaultRoute();
+
+
+--AddMvcCore() method add only the core Mvc services
+--AddMvc() method ads all the required Mvc services
+--AddMvc() method calls AddMvcCore()internally
+
+--Return type: JsonResult, ViewResult, ObjectResult
+
+Controller:
+--handles the incoming http requests
+--Builds the model and
+--Return the model data to the user if we are building API or
+--selects a view and pass the model data to the view
+--the view then generates the required html to present the data
+
+Views:
+--A view file has .cshtml extension
+--A view is an HTML template with the embedded razor markup
+--Contains logic to display data
+--View() or View(Object model): looks for the view with the same name as the action model
+--View(string ViewName)
+   -Looks for a view file with own custom name
+   -We can specify a view name or a view file path
+   -View file path can be absoute or relative
+   -with absoute path .cshtml extension must be specified
+   -with relative path do not specify the file extension .cshtml
+--View(string ViewName, object model)
+
+
+Passing data to the views:
+--ViewData
+--ViewBag
+--Stringly Typed View
+
+ViewData
+--Dictionary of weaky typed objects
+--Use string keys to store and retrive data
+--Dynamically resolved at the runtime
+--No compile-time type checking and intelligense
+
+ViewBag
+--ViewBag is a wrapper around viewData
+--Creates Loosely typed views
+--ViewBag uses dynamic propertiesto store and retrieve data
+--Resolved dynamicaly at runtime
+--No compile-time checkingand intellisense
+
+Strongy typed Views
+--Specify the mode type in the view using @model directive
+   @model EmployeeManagement.Model.Employee
+
+--To access the model properties use @Model.
+   Name: @Model.Name
+   Email: @Model.Email
+
+--Strongly-typed view provides compile-time checking and intellisense
+
+ViewModel
+--We create a view model when a model does not contains all data that a view needs.
+
+Routing:
+--Are of two types conventional and attributes
+
+Conventional routing
+--either use app.UseMvcWithDefaultRoute(); or
+ app.useMvc(route =>
+  {
+   route.MapRoute("default", "{controller=Home}/{action=index}/{id?}")
+  });
+
+Attribute routing
+--use app.UseMvc();
+--On the action method of the ocntroller class use the Route attributes
+  [Route("")]
+  [Route("Home")]
+  [Route("Home/Index")]
+  Public ViewResult Index()
+  {
+    var model = _empRepository.GetEmployee();
+    return View(model);
+  }
+
+--With Attribute routing, [Route] attribute is used to define the Routes
+--Route attribute can be applied on the Controller or the COntroller Action methods
+--With attribute routing, routes are paced next to the action methods that will actually use them
+--Attribute routing offer a bit more flexibility than the conventional routing
