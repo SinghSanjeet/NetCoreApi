@@ -214,3 +214,45 @@ instance across the different http requests.
 AddTransient:
 With a transient service a new nstance is provided everytime an instance is requested wheather it is
 in the scope of the same http or the different http requests.
+
+
+
+Entity framework Core:
+--ORM(Object relational mapper)
+--Light weight, extensible, and open source
+--Works cross platform
+--Microsoft's official data platform
+
+EFCore packages:
+Micrsoft.EntityFrameworkCOre.SqlServer
+               |
+Micrsoft.EntityFrameworkCOre.Relational
+               |
+   Micrsoft.EntityFrameworkCOre
+
+
+
+DbContext in EntityFramework Core
+Public class AppDbCOntext : DbCOntext
+{
+  Public AddDbCOntext(DbCOntextOptions<AppDbCOntext> options) :base(options)
+  {
+  }
+
+  Public DbSet<Employee> Empoyees{get; set;}
+}
+
+--To use the DbContext class in our aplication, create a class that derives from the DbContext class.
+--To Pass the configuration information to the DbContext use DbContextOptions instance.
+--The DbCOntext class includes a DbSet<TEntity> property for each entity in the model.
+--The Linq queries against the DbSet<TEntity> will be transated into queries against the underlyning database.
+
+
+EF Migration:
+--Keeps the database schema and application mode clases in sync.
+--get-help about_entityframeworkcore (help texts related to efcore)
+--Add-Migration "Name"
+--update-database (updates the database if migration name is not specified then the latest migration would be taken)
+
+
+
